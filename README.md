@@ -16,27 +16,50 @@
 
 # srm-downscaling-data-utils
 
-Utilities for accessing and analysing output from the srm-downscaling project
+Utilities for accessing and analysing output from the [srm-downscaling project](https://carbonplan.github.io/srm-downscaling/).
 
 ## data
 
 > [!CAUTION]
-> **Preliminary Data**: This dataset includes multiple variables, scenarios, and GCMs at the daily timestep with global coverage, downscaled to the 0.25° resolution. The version currently released is a preliminary subset containing mean daily temperature (`tasmean`) for one historical scenario, one GCM, and two future scenarios (the G6-1.5 SAI scenario and SSP2-4.5). We welcome feedback on both the preliminary dataset and its access utilities to help guide continued development.
+> **Preliminary Data**: The data used throughout this repository is a preliminary release. We welcome feedback on both the dataset and its access utilities to help guide continued development.
 
 > [!IMPORTANT]
 > Data associated with this repository are subject to additional [terms of data access](https://carbonplan.github.io/srm-downscaling/terms-of-data-access.html).
 
 ## installation
 
-This project uses [Pixi](https://pixi.sh) for environment and dependency management.
+### git
 
-1. Install Pixi: follow the [installation instructions](https://pixi.sh/latest/#installation)
+1. Verify Git is installed:
 
-2. Clone and set up:
+```bash
+git --version
+```
+
+If not installed, follow the [installation instructions](https://git-scm.com/downloads).
+
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/carbonplan/srm-downscaling-data-utils
 cd srm-downscaling-data-utils
+```
+
+### pixi
+
+This project uses [Pixi](https://pixi.sh) for environment and dependency management.
+
+1. Verify Pixi is installed:
+
+```bash
+pixi --version
+```
+
+If not installed, follow the [installation instructions](https://pixi.sh/latest/#installation).
+
+1. Install dependencies:
+
+```bash
 pixi install
 ```
 
