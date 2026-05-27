@@ -16,7 +16,15 @@
 
 # srm-downscaling-data-utils
 
-Utilities for accessing and analysing output from the [srm-downscaling project](https://carbonplan.github.io/srm-downscaling/).
+This repository shares utilities for accessing and analyzing output from the [srm-downscaling project](https://carbonplan.github.io/srm-downscaling/). You'll probably be primarily interested in [`notebooks/subsetting-and-exporting.ipynb`](notebooks/subsetting-and-exporting.ipynb), which provides tools for accessing, subsetting, transforming, and exporting the downscaled data from the cloud to your local environment.
+
+To get started, we recommend following the steps below:
+
+**01 — [Set up your environment](#installation)**
+Install Git and Pixi, then clone the repository and install dependencies.
+
+**02 — [Run the notebook](#running-the-notebook)**
+Launch JupyterLab and open the notebook to start working with the data.
 
 ## data
 
