@@ -28,6 +28,8 @@ Utilities for accessing and analysing output from the [srm-downscaling project](
 
 ## installation
 
+All installation steps are run from a terminal. Once you have a terminal open, follow the steps below.
+
 ### git
 
 1. Verify Git is installed:
