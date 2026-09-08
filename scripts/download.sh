@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#
+# Bash entry point for downloading a subset of the SRM downscaling dataset.
+# Thin wrapper around scripts/download.py -- see `download.sh --help`.
+#
+# Examples
+# --------
+#   # Estimate what a request costs, without downloading anything:
+#   ./scripts/download.sh --scenario ssp245 --start 2050-01-01 --end 2059-12-31 \
+#       --bbox 68 6 98 38 --dry-run
+#
+#   # Download a single-point time series to a NetCDF file:
+#   ./scripts/download.sh --scenario historical --variable tas \
+#       --point 28.6 77.2 --start 1990-01-01 --end 1999-12-31 --output delhi.nc
+#
+# Requests reading more than 5 GB prompt for confirmation; pass --yes to skip.
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo="$(dirname "$here")"
+
+cd "$repo"
+exec pixi run python "$here/download.py" "$@"
