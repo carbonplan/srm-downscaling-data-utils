@@ -96,6 +96,46 @@ To execute the notebook non-interactively (e.g. for testing):
 pixi run jupyter nbconvert --to notebook --execute --inplace notebooks/subsetting-and-exporting.ipynb
 ```
 
+## downloading from the command line
+
+If you want a file rather than an interactive session, `scripts/download.sh` is a
+command-line counterpart to the notebook. It takes the same choices — scenario,
+variable, region, date range — as arguments.
+
+Check what a request costs before downloading anything:
+
+```bash
+./scripts/download.sh --scenario ssp245 --start 2050-01-01 --end 2059-12-31 \
+    --bbox 68 6 98 38 --dry-run
+```
+
+Download a single-point time series:
+
+```bash
+./scripts/download.sh --scenario historical --variable tas \
+    --point 28.6 77.2 --start 1990-01-01 --end 1999-12-31 --output delhi.nc
+```
+
+Download a region as Zarr:
+
+```bash
+./scripts/download.sh --scenario g6_1p5k --variable pr \
+    --bbox 68 6 98 38 --start 2050-01-01 --end 2059-12-31 \
+    --format zarr --output india_pr.zarr
+```
+
+See `./scripts/download.sh --help` for the full list of options.
+
+Two things it does for you:
+
+- **Validates dates against the scenario.** Coverage differs — `g6_1p5k` begins in
+  2035, and on `ssp245` the `tasmax`/`tasmin`/`dtr` variables stop in 2069. Asking
+  outside those ranges would otherwise write an empty file without complaint.
+- **Warns before a large download.** The data is stored in chunks spanning 8,000
+  days, so a request touching a wide area reads far more than it returns. Anything
+  over 5 GB prompts for confirmation; pass `--yes` to skip the prompt, or
+  `--dry-run` to see the estimate and stop.
+
 ## license
 
 All the code in this repository is [MIT](https://choosealicense.com/licenses/mit/) licensed.
