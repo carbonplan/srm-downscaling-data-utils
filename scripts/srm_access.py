@@ -34,12 +34,12 @@ STORE = {
 # get reproducible reads.
 STORE_BRANCH = "v0.13.0"
 
-VARIABLES = ["tas", "tasmax", "tasmin", "dtr", "pr", "rsds", "hurs"]
+VARIABLES = ["tas", "tasmax", "tasmin", "pr", "rsds"]
 SCENARIOS = ["historical", "ssp245", "g6_1p5k"]
 
-# tasmax/tasmin/dtr come from a separate "bridge" job and carry a different
-# ensemble member than tas/pr/rsds/hurs within the same scenario.
-_BRIDGE_VARS = {"tasmax", "tasmin", "dtr"}
+# tasmax/tasmin come from a separate "bridge" job and carry a different
+# ensemble member than tas/pr/rsds within the same scenario.
+_BRIDGE_VARS = {"tasmax", "tasmin"}
 _MEMBERS = {
     "historical": {"main": "r3i1p1f1", "bridge": "001"},
     "ssp245": {"main": "003", "bridge": "008"},
