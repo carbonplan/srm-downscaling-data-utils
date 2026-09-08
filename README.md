@@ -129,7 +129,7 @@ See `./scripts/download.sh --help` for the full list of options.
 Two things it does for you:
 
 - **Validates dates against the scenario.** Coverage differs — `g6_1p5k` begins in
-  2035, and on `ssp245` the `tasmax`/`tasmin`/`dtr` variables stop in 2069. Asking
+  2035, and on `ssp245` the `tasmax`/`tasmin` variables stop in 2069. Asking
   outside those ranges would otherwise write an empty file without complaint.
 - **Warns before a large download.** The data is stored in chunks spanning 8,000
   days, so a request touching a wide area reads far more than it returns. Anything
