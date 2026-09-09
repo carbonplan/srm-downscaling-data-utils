@@ -126,6 +126,15 @@ Download a region as Zarr:
 
 See `./scripts/download.sh --help` for the full list of options.
 
+Output files are named after the data they contain, so repeated downloads never
+overwrite one another:
+
+```
+pt28.6-77.2_CESM2-WACCM6_bcsd_ssp245_003_tas_2050-2055.nc
+```
+
+Pass `--output` to choose a name yourself.
+
 Choose the model and downscaling method with `--gcm` (`CESM2-WACCM6` or
 `UKESM1-1-LL`) and `--method` (`bcsd` or `qdmsd`); both default to
 `CESM2-WACCM6` / `bcsd`.
