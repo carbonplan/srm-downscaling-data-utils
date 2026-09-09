@@ -30,6 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from srm_access import (  # noqa: E402
     GCMS,
+    output_filename,
     METHODS,
     STORE_BRANCH,
     VARIABLES,
@@ -105,17 +106,20 @@ def _human(nbytes: int) -> str:
 
 
 def default_output(args) -> Path:
-    bits = [args.gcm, args.method, args.scenario, args.variable]
+    """Self-describing filename, so downloads never overwrite one another."""
     if args.point:
-        bits.append(f"pt{args.point[0]:g}_{args.point[1]:g}")
+        label = f"pt{args.point[0]:g}-{args.point[1]:g}"
     elif args.bbox:
-        bits.append("bbox")
-    if args.start:
-        bits.append(args.start[:4])
-    if args.end:
-        bits.append(args.end[:4])
-    suffix = ".zarr" if args.format == "zarr" else ".nc"
-    return Path("_".join(bits) + suffix)
+        label = "bbox-" + "-".join(f"{v:g}" for v in args.bbox)
+    else:
+        label = "global"
+    return Path(
+        output_filename(
+            args.scenario, args.variable, args.start, args.end,
+            gcm=args.gcm, method=args.method, label=label,
+            suffix=".zarr" if args.format == "zarr" else ".nc",
+        )
+    )
 
 
 def main(argv=None) -> int:

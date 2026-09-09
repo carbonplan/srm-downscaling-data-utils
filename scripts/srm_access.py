@@ -33,6 +33,7 @@ __all__ = [
     "check_members",
     "load_downscaling_store",
     "describe_request",
+    "output_filename",
 ]
 
 BUCKET = "us-west-2.opendata.source.coop"
@@ -218,3 +219,62 @@ def describe_request(da: xr.DataArray, label: str = "selection", quiet: bool = F
         print(f"  chunks touched {n_chunks:8d}  ({chunk_bytes / 1e6:.1f} MB each, {source})")
         print(f"  data read      {read / 1e9:8.3f} GB")
     return read
+
+
+_SEASONS = {
+    (12, 1, 2): "DJF",
+    (3, 4, 5): "MAM",
+    (6, 7, 8): "JJA",
+    (9, 10, 11): "SON",
+}
+
+
+def _month_tag(months) -> str:
+    """Name a month filter: a season if it is one, else the month numbers."""
+    key = tuple(sorted(months))
+    for season, name in _SEASONS.items():
+        if key == tuple(sorted(season)):
+            return name
+    return "".join(f"m{m:02d}" for m in key)
+
+
+def output_filename(
+    scenario: str,
+    variable: str,
+    start: str | None = None,
+    end: str | None = None,
+    *,
+    gcm: str = "CESM2-WACCM6",
+    method: str = "bcsd",
+    label: str | None = None,
+    months=None,
+    suffix: str = ".nc",
+) -> str:
+    """Build a self-describing, collision-free output filename.
+
+    Every field that distinguishes one download from another goes in the name:
+
+        india_CESM2-WACCM6_bcsd_ssp245_003_tas_2050-2055.nc
+
+    The ensemble member alone is not enough to tell downloads apart -- on
+    CESM2-WACCM6 both ssp245/tas and g6_1p5k/tas resolve to member 003 -- so
+    the scenario, GCM and method are all part of the name.
+
+    `label` is a free-text prefix describing the region or purpose; underscores
+    in it are converted to hyphens so `_` stays a clean field separator.
+    """
+    member = ensemble_member(scenario, variable, gcm)
+    bits = []
+    if label:
+        bits.append(str(label).strip().replace(" ", "-").replace("_", "-"))
+    bits += [gcm, method, scenario, member, variable]
+
+    if start or end:
+        span = "-".join(part[:4] for part in (start, end) if part)
+        bits.append(span)
+    if months:
+        bits.append(_month_tag(months))
+
+    if not suffix.startswith("."):
+        suffix = "." + suffix
+    return "_".join(bits) + suffix
