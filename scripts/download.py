@@ -29,14 +29,21 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from srm_access import (  # noqa: E402
-    SCENARIOS,
+    GCMS,
+    METHODS,
     STORE_BRANCH,
     VARIABLES,
     coverage,
     describe_request,
     ensemble_member,
     load_downscaling_store,
+    scenarios_for,
 )
+
+# argparse cannot express "scenarios valid for the chosen GCM", so offer the
+# union here and let the loader reject an unavailable combination with a
+# message naming what that GCM does publish.
+ALL_SCENARIOS = sorted({s for g in GCMS for s in scenarios_for(g)})
 
 # A request reading more than this prompts for confirmation. The store is
 # space-fragmented, so global requests reach tens of GB very easily.
@@ -50,7 +57,10 @@ def parse_args(argv=None) -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__.split("Examples")[-1],
     )
-    p.add_argument("--scenario", required=True, choices=SCENARIOS)
+    p.add_argument("--scenario", required=True, choices=ALL_SCENARIOS)
+    p.add_argument("--gcm", default="CESM2-WACCM6", choices=GCMS)
+    p.add_argument("--method", default="bcsd", choices=METHODS,
+                   help="downscaling method (default: bcsd)")
     p.add_argument("--variable", default="tas", choices=VARIABLES)
     p.add_argument("--start", help="ISO start date, e.g. 2050-01-01")
     p.add_argument("--end", help="ISO end date, e.g. 2059-12-31")
@@ -95,7 +105,7 @@ def _human(nbytes: int) -> str:
 
 
 def default_output(args) -> Path:
-    bits = [args.scenario, args.variable]
+    bits = [args.gcm, args.method, args.scenario, args.variable]
     if args.point:
         bits.append(f"pt{args.point[0]:g}_{args.point[1]:g}")
     elif args.bbox:
@@ -111,14 +121,18 @@ def default_output(args) -> Path:
 def main(argv=None) -> int:
     args = parse_args(argv)
 
-    first, last = coverage(args.scenario, args.variable)
+    try:
+        first, last = coverage(args.scenario, args.variable, args.gcm)
+    except ValueError as exc:
+        raise SystemExit(f"error: {exc}")
     validate_dates(args, first, last)
 
-    member = ensemble_member(args.scenario, args.variable)
-    print(f"{args.scenario}/{args.variable} -> member {member} (branch {STORE_BRANCH})")
+    member = ensemble_member(args.scenario, args.variable, args.gcm)
+    print(f"{args.gcm}/{args.method}/{args.scenario}/{args.variable} -> member {member} "
+          f"(branch {STORE_BRANCH})")
     print(f"coverage: {first} to {last}")
 
-    ds = load_downscaling_store(args.scenario, args.variable)
+    ds = load_downscaling_store(args.scenario, args.variable, gcm=args.gcm, method=args.method)
     da = ds[args.variable]
 
     if args.start or args.end:
