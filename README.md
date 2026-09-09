@@ -126,11 +126,17 @@ Download a region as Zarr:
 
 See `./scripts/download.sh --help` for the full list of options.
 
+Choose the model and downscaling method with `--gcm` (`CESM2-WACCM6` or
+`UKESM1-1-LL`) and `--method` (`bcsd` or `qdmsd`); both default to
+`CESM2-WACCM6` / `bcsd`.
+
 Two things it does for you:
 
 - **Validates dates against the scenario.** Coverage differs — `g6_1p5k` begins in
-  2035, and on `ssp245` the `tasmax`/`tasmin` variables stop in 2069. Asking
-  outside those ranges would otherwise write an empty file without complaint.
+  2035, `g6_1p5k_end` covers 2085–2100 and is published for `CESM2-WACCM6` only,
+  and on `CESM2-WACCM6` the `tasmax`/`tasmin` variables stop in 2069 under
+  `ssp245`. Asking outside those ranges would otherwise write an empty file
+  without complaint.
 - **Warns before a large download.** The data is stored in chunks spanning 8,000
   days, so a request touching a wide area reads far more than it returns. Anything
   over 5 GB prompts for confirmation; pass `--yes` to skip the prompt, or
